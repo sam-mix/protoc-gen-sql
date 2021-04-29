@@ -2,9 +2,51 @@ syntax = "proto3";
 
 option go_package = "/;proto";
 
+message PersonResponse {
+  message Hobbies {
+    message Outer {
+      message Inner {
+        repeated string names = 1;
+      }
+      map<uint64,Inner> inner_map = 1;
+    } 
+    repeated string Hobbies = 1; 
+    map<uint64, Outer> outer_map = 2;
+  }
+
+  string id = 1;
+  Hobbies hobbies = 2;
+  map<uint64, Hobbies> hobbies_map = 3;
+}
+
 message Person {
   message Hobbies {
-    repeated string hobbies = 1;
+    message Outer {
+      message Inner {
+        repeated string names = 1;
+      }
+      map<uint64,Inner> inner_map = 1;
+    } 
+    repeated string Hobbies = 1; 
+    map<uint64, Outer> outer_map = 2;
+  }
+
+  string id = 1;
+  Hobbies hobbies = 2;
+  map<uint64, Hobbies> hobbies_map = 3;
+}
+
+
+message PersonRequest {
+  message Hobbies {
+    message Outer {
+      message Inner {
+        repeated string names = 1;
+      }
+      map<uint64,Inner> inner_map = 1;
+    } 
+    repeated string Hobbies = 1; 
+    map<uint64, Outer> outer_map = 2;
   }
 
   string id = 1;

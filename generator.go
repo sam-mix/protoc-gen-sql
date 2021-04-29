@@ -4,10 +4,18 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 )
+
+// 因为我们针对数据模型生成方法，所以要屏蔽掉的除此之外的 Message， 根名称为
+// "Response", "Request" 的 Message 要被忽略掉。
+var IgnoreSuffixes = []string{
+	"Response",
+	"Request",
+}
 
 type Generator struct {
 	*generator.Generator
@@ -76,10 +84,27 @@ func (p *Generator) msgs(file *generator.FileDescriptor) Msgs {
 			return
 		}
 		child.Name = &name
-		p.write = true
 		msgs.Protos = append(msgs.Protos, child)
 	})
 
+	protos := []*descriptor.DescriptorProto{}
+	for _, m := range msgs.Protos {
+		firstName := strings.Split(*m.Name, "_")[0]
+		ignore := false
+		for _, s := range IgnoreSuffixes {
+			if strings.HasSuffix(firstName, s) {
+				ignore = true
+				break
+			}
+		}
+		if !ignore {
+			protos = append(protos, m)
+		}
+	}
+	if len(protos) > 0 {
+		p.write = true
+	}
+	msgs.Protos = protos
 	return msgs
 }
 
